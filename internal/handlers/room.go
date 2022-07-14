@@ -8,13 +8,14 @@ import (
 	guuid "github.com/google/uuid"
 	"os"
 	"time"
+	w "streaming.service/pkg/webrtc"
 )
 
 
 type webSocketMessage struct {
 	Event string `json:"event"`
 	Data  string `json:"data"`
-	
+
 }
 
 func RoomCreate(c *fiber.Ctx) error {
@@ -29,6 +30,7 @@ func Room(c *fiber.Ctx) error {
 		return nil
 	}
 	uuid, suuid, _ := CreateOrGetRoom(uuid)
+	w.RoomConnection(c, room.Peers)
 }
 
 func CreateOrGetRoom(uuid string) (string, string, Room) {
