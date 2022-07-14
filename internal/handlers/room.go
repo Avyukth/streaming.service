@@ -1,15 +1,14 @@
 package handlers
 
-import(
+import (
 	"fmt"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/websocket/v2"
+	guuid "github.com/google/uuid"
 	"os"
 	"time"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/websocket/v2"
-	"github.com/gofiber/fiber/v2/middleware/logger"
-	guuid "github.com/google/uuid"
 )
-
 
 func RoomCreate(c *fiber.Ctx) error {
 	uuid := guuid.New()
@@ -22,10 +21,10 @@ func Room(c *fiber.Ctx) error {
 		c.Status(400)
 		return nil
 	}
-	uuid,suuid,_ :=CreateOrGetRoom(uuid)
+	uuid, suuid, _ := CreateOrGetRoom(uuid)
 }
 
-func CreateOrGetRoom(uuid string) (string,string,Room){
+func CreateOrGetRoom(uuid string) (string, string, Room) {
 	uuid := c.Params("uuid")
 	if uuid == "" {
 		uuid = guuid.New().String()
@@ -34,7 +33,7 @@ func CreateOrGetRoom(uuid string) (string,string,Room){
 	return uuid
 }
 
-func RoomWebsocket(c *websocket.Conn){
+func RoomWebsocket(c *websocket.Conn) {
 	uuid := c.Params("uuid")
 	if uuid == "" {
 		return
