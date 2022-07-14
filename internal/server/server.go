@@ -1,7 +1,6 @@
 package server
 
 import (
-	w "streaming.service/pkg/webrtc"
 	"flag"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -10,6 +9,7 @@ import (
 	"github.com/gofiber/websocket/v2"
 	"os"
 	"streaming.service/internal/handlers"
+	w "streaming.service/pkg/webrtc"
 	"time"
 )
 

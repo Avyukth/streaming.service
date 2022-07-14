@@ -9,16 +9,16 @@ import (
 func RoomConnection(c *websocket.Conn, p *Peers) (conn *webrtc.PeerConnection, err error) {
 	var config webrtc.Configuration
 
-	peerConnection, err:= webrtc.NewPeerConnection(config)
+	peerConnection, err := webrtc.NewPeerConnection(config)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	newPeer:=PeerConnectionState{
+	newPeer := PeerConnectionState{
 		PeerConnection: peerConnection,
-		websocket:&ThreadSafeWriter{},
-		Conn: c,
-		Mutex:sync.Mutex{},
+		websocket:      &ThreadSafeWriter{},
+		Conn:           c,
+		Mutex:          sync.Mutex{},
 	}
 }

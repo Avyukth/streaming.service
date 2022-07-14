@@ -1,18 +1,15 @@
 package webrtc
 
-import(
-	
-)
+import ()
 
 type Room struct {
 	Peers *Peers
-	Hub *chat.Hub
-
+	Hub   *chat.Hub
 }
 type Peers struct {
-	ListLock sync.RwMutex
+	ListLock    sync.RwMutex
 	Connection  []PeerConnectionState
-	TrackLocals  map[string]*webrtc.TrackLocalStaticRTP
+	TrackLocals map[string]*webrtc.TrackLocalStaticRTP
 }
 
 func (p *Peer) DispatchKeyFrames() {

@@ -7,15 +7,13 @@ import (
 	"github.com/gofiber/websocket/v2"
 	guuid "github.com/google/uuid"
 	"os"
-	"time"
 	w "streaming.service/pkg/webrtc"
+	"time"
 )
-
 
 type webSocketMessage struct {
 	Event string `json:"event"`
 	Data  string `json:"data"`
-
 }
 
 func RoomCreate(c *fiber.Ctx) error {
