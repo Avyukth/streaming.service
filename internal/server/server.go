@@ -2,10 +2,10 @@ package server
 
 import (
 	"flag"
-	"hash"
 	"os"
 	"time"
-
+  "streaming.service/internal/handlers"
+  w "Streaming.service/pkg/webrtc"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -20,7 +20,7 @@ var (
 	key         = flag.String("key", "", "key file")
 )
 
-func Run() {
+func Run() error {
 	flag.Parse()
 	if *address == ":" {
 		*address = ":8080"
@@ -30,15 +30,34 @@ func Run() {
 	app.Use(cors.New())
 	app.Use(logger.New())
 
-	app.Get("/", handlers.welcome)
+	app.Get("/", handlers.Welcome)
 	app.Get("/room/create", handlers.RoomCreate)
 	app.Get("/room/:uuid", handlers.Room)
 	app.Get("/room/:uuid/websocket", websocket.New(handlers.RoomWebsocket, websocket.Config{
 		HandshakeTimeout: time.Second * 10}))
 	app.Get("/room/:uuid/chat", handlers.RoomChat)
-	app.Get("/room/:uuid/chat/websocket", websocket.RoomChatWebsocket)
-	app.Get("/room/:uuid/viewer/websocket", handlers.RoomViewerWebsocket)
-	app.Get("/stream/:ssuid/websocket")
-	app.Get("/stream/:ssuid/chat/websocket", websocket.StreamChat)
-	app.Get("/stream/:ssuid/viewer/websocket", websocket.StreamViewer)
+	app.Get("/room/:uuid/chat/websocket", websocket.New(handlers.RoomChatWebsocket))
+	app.Get("/room/:uuid/viewer/websocket", websocket.New(handlers.RoomViewerWebsocket))
+	app.Get("/stream/:ssuid/websocket",websocket.New(handlers.StreamWebsocket, websocket.Config{
+    HandshakeTimeout: time.Second * 10}))
+	app.Get("/stream/:ssuid/chat/websocket", websocket.New(handlers.StreamChatWebsocket))
+	app.Get("/stream/:ssuid/viewer/websocket", websocket.New(handlers.StreamViewerWebsocket))
+  app.Static("/","./assets")
+  
+  w.Rooms = make(map[string]*w.Room)
+  w.Streams = make(map[string]*w.Room)
+  if *certificate != "" && *key != "" {
+    app.ListenTLS(*address, *certificate, *key)
+  } else {
+    app.Listen(*address)
+  }
+  go dispatchKeyFrames()
+  return app.Listen(*address)
 }
+  func dispatchKeyFrames() {
+    for range time.NewTicker(time.Second * 1).C {
+      for _, room := range w.Rooms {
+        room.DispatchKeyFrames()
+      }
+    }
+  }
