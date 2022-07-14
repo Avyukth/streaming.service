@@ -10,6 +10,13 @@ import (
 	"time"
 )
 
+
+type webSocketMessage struct {
+	Event string `json:"event"`
+	Data  string `json:"data"`
+	
+}
+
 func RoomCreate(c *fiber.Ctx) error {
 	uuid := guuid.New()
 	return c.Redirect(fmt.Sprintf("/room/%s", uuid.String()))
@@ -34,6 +41,20 @@ func CreateOrGetRoom(uuid string) (string, string, Room) {
 }
 
 func RoomWebsocket(c *websocket.Conn) {
+	uuid := c.Params("uuid")
+	if uuid == "" {
+		return
+	}
+}
+
+func RoomViewerWebsocket(c *websocket.Conn) {
+	uuid := c.Params("uuid")
+	if uuid == "" {
+		return
+	}
+}
+
+func roomViewerConnection(c *websocket.Conn, p *w.Peers) {
 	uuid := c.Params("uuid")
 	if uuid == "" {
 		return
