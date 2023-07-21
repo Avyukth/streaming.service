@@ -8,18 +8,16 @@ import (
 	"github.com/fasthttp/websocket"
 )
 
-
-const(
-	writeWait = 10 * time.Second
-	pongWait = 60 * time.Second
-	pingPeriod = (pongWait * 9) / 10
+const (
+	writeWait      = 10 * time.Second
+	pongWait       = 60 * time.Second
+	pingPeriod     = (pongWait * 9) / 10
 	maxMessageSize = 512
 )
 
 var (
 	newline = []byte{'\n'}
-	space	= []byte{' '}
-
+	space   = []byte{' '}
 )
 
 var upgrader = websocket.FastHTTPUpgrader{
@@ -28,11 +26,10 @@ var upgrader = websocket.FastHTTPUpgrader{
 }
 
 type Client struct {
-	Hub *Hub
-	Conn  *websocket.Conn
+	Hub  *Hub
+	Conn *websocket.Conn
 	Send chan []byte
 }
-
 
 func (c *Client) ReadPump() {
 	defer func() {
@@ -46,7 +43,7 @@ func (c *Client) ReadPump() {
 		return nil
 	})
 	for {
-		_,message, err:=c.Conn.ReadMessage()
+		_, message, err := c.Conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				log.Printf("error: %v", err)
@@ -58,33 +55,33 @@ func (c *Client) ReadPump() {
 	}
 }
 
-func(c *Client)WritePump(){
-	ticker:=time.NewTicker(pingPeriod)
-	defer func(){
+func (c *Client) WritePump() {
+	ticker := time.NewTicker(pingPeriod)
+	defer func() {
 		ticker.Stop()
 		c.Conn.Close()
 	}()
-	for{
-		select{
-		case message:=<-c.Send:
+	for {
+		select {
+		case message := <-c.Send:
 			c.Conn.SetWriteDeadline(time.Now().Add(writeWait))
-			if err:=c.Conn.WriteMessage(websocket.TextMessage,message);err!=nil{
+			if err := c.Conn.WriteMessage(websocket.TextMessage, message); err != nil {
 				return
 			}
-			
+
 		case <-ticker.C:
 			c.Conn.SetWriteDeadline(time.Now().Add(writeWait))
-			if err:=c.Conn.WriteMessage(websocket.PingMessage,nil);err!=nil{
+			if err := c.Conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 				return
 			}
 		}
 	}
 }
 
-func PeerChatConnection(c *websocket.Conn, hub *Hub){
-	client:=&Client{Hub:hub, Conn:c, Send:make(chan []byte,256)}
+func PeerChatConnection(c *websocket.Conn, hub *Hub) {
+	client := &Client{Hub: hub, Conn: c, Send: make(chan []byte, 256)}
 	client.Hub.register <- client
-	
+
 	go client.WritePump()
 	client.ReadPump()
 
