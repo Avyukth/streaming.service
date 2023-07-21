@@ -3,7 +3,7 @@ package webrtc
 import (
 	"log"
 
-	"github.com/gofiber/websocket/v2"
+	"github.com/gofiber/contrib/websocket"
 )
 
 func RoomConnection(c *websocket.Conn, p *Peers) (conn *webrtc.PeerConnection, err error) {
