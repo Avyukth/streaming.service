@@ -2,15 +2,16 @@ package server
 
 import (
 	"flag"
+	"os"
+	"time"
+
+	"github.com/Avyukth/streaming.service/internal/handlers"
+	w "github.com/Avyukth/streaming.service/pkg/webrtc"
+	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/gofiber/template/html"
-	"github.com/gofiber/websocket/v2"
-	"os"
-	"streaming.service/internal/handlers"
-	w "streaming.service/pkg/webrtc"
-	"time"
+	"github.com/gofiber/template/html/v2"
 )
 
 var (

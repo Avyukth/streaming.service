@@ -2,13 +2,12 @@ package handlers
 
 import (
 	"fmt"
+
+	w "github.com/Avyukth/streaming.service/pkg/webrtc"
+	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/gofiber/websocket/v2"
+
 	guuid "github.com/google/uuid"
-	"os"
-	w "streaming.service/pkg/webrtc"
-	"time"
 )
 
 type webSocketMessage struct {

@@ -1,8 +1,8 @@
 package main
 
 import (
+	"github.com/Avyukth/streaming.service/internal/server"
 	"log"
-	"streaming.service/internal/server"
 )
 
 func main() {
