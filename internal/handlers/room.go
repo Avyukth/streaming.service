@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"os"
 
 	w "github.com/Avyukth/streaming.service/pkg/webrtc"
 	"github.com/gofiber/contrib/websocket"
@@ -26,8 +27,22 @@ func Room(c *fiber.Ctx) error {
 		c.Status(400)
 		return nil
 	}
+
+	ws := "ws"
+
+	if os.Getenv("ENVIRONMENT") == "development" {
+		ws = "wss"
+	}
+
 	uuid, suuid, _ := CreateOrGetRoom(uuid)
-	w.RoomConnection(c, room.Peers)
+	return c.Render("peer", fiber.Map{
+		"RoomWebSocketAddr":   fmt.Sprintf("%s://%s/room%s/websocket", ws, c.Hostname(), uuid),
+		"RoomLink":            fmt.Sprintf("%s://%s/room/%s", c.Protocol(), c.Hostname(), uuid),
+		"ChatWebSocketAddr":   fmt.Sprintf("%s://%s/room%s/chat/websocket", ws, c.Hostname(), uuid),
+		"ViewerWebSocketAddr": fmt.Sprintf("%s://%s/room%s/viewer/websocket", ws, c.Hostname(), uuid),
+		"StreamLink":          fmt.Sprintf("%s://%s/room/%s/stream", c.Protocol(), c.Hostname(), uuid),
+		"Type":                "room",
+	}, "layouts/main")
 }
 
 func CreateOrGetRoom(uuid string) (string, string, *w.Room) {

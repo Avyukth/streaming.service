@@ -9,7 +9,7 @@ type Room struct {
 	Hub   *chat.Hub
 }
 type Peers struct {
-	ListLock    sync.RwMutex
+	ListLock    sync.RWMutex
 	Connection  []PeerConnectionState
 	TrackLocals map[string]*webrtc.TrackLocalStaticRTP
 }
