@@ -5,7 +5,6 @@ import (
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	guid "github.com/google/uuid"
-	"github.com/sqs/goreturns/returns"
 )
 
 func RoomChat(c *fiber.Ctx) error {
@@ -50,4 +49,5 @@ func StreamChatWebSocket(c *websocket.Conn) {
 		chat.PeerChatConn(c.Conn, stream.Hub)
 		return
 	}
+	w.RoomsLock.Unlock()
 }
