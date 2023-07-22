@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 
-	guuid "github.com/google/uuid"
+	gguid "github.com/google/uuid"
 )
 
 type webSocketMessage struct {
@@ -16,8 +16,8 @@ type webSocketMessage struct {
 }
 
 func RoomCreate(c *fiber.Ctx) error {
-	uuid := guuid.New()
-	return c.Redirect(fmt.Sprintf("/room/%s", uuid.String()))
+	roomUuid := gguid.New()
+	return c.Redirect(fmt.Sprintf("/room/%s", roomUuid.String()))
 }
 
 func Room(c *fiber.Ctx) error {
@@ -44,6 +44,9 @@ func RoomWebsocket(c *websocket.Conn) {
 	if uuid == "" {
 		return
 	}
+
+	_, _, room := CreateOrGetRoom(uuid)
+	return
 }
 
 func RoomViewerWebsocket(c *websocket.Conn) {
