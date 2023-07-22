@@ -1,9 +1,9 @@
 package webrtc
 
 import (
-	"log"
-
 	"github.com/gofiber/contrib/websocket"
+	"log"
+	"sync"
 )
 
 func RoomConnection(c *websocket.Conn, p *Peers) (conn *webrtc.PeerConnection, err error) {
@@ -21,4 +21,5 @@ func RoomConnection(c *websocket.Conn, p *Peers) (conn *webrtc.PeerConnection, e
 		Conn:           c,
 		Mutex:          sync.Mutex{},
 	}
+	return &newPeer, nil
 }

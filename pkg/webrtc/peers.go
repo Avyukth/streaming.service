@@ -1,6 +1,8 @@
 package webrtc
 
-import ()
+import (
+	"sync"
+)
 
 type Room struct {
 	Peers *Peers
@@ -12,10 +14,17 @@ type Peers struct {
 	TrackLocals map[string]*webrtc.TrackLocalStaticRTP
 }
 
-func (p *Peer) DispatchKeyFrames() {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-	for _, s := range p.streams {
-		s.DispatchKeyFrames()
+type PeerConnectionState struct {
+	PeerConnection   *webrtc.PeerConnection
+	websocket        websocket
+	Mutex            sync.RWMutex
+	Conn             connection
+	ThreadSafeWriter *ThreadSafeWriter
+}
+
+func NewPeerConnectionState() *PeerConnectionState {
+	return &PeerConnectionState{
+		PeerConnection: nil,
 	}
+
 }

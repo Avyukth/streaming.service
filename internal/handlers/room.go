@@ -30,7 +30,7 @@ func Room(c *fiber.Ctx) error {
 	w.RoomConnection(c, room.Peers)
 }
 
-func CreateOrGetRoom(uuid string) (string, string, Room) {
+func CreateOrGetRoom(uuid string) (string, string, *w.Room) {
 	uuid := c.Params("uuid")
 	if uuid == "" {
 		uuid = guuid.New().String()
@@ -46,7 +46,7 @@ func RoomWebsocket(c *websocket.Conn) {
 	}
 
 	_, _, room := CreateOrGetRoom(uuid)
-	return
+	w.RoomConnection(c, room.Peers)
 }
 
 func RoomViewerWebsocket(c *websocket.Conn) {
