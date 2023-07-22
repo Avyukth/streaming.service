@@ -116,9 +116,4 @@ func roomViewerConnection(c *websocket.Conn, p *w.Peers) {
 		}
 
 	}
-
-	uuid := c.Params("uuid")
-	if uuid == "" {
-		return
-	}
 }
