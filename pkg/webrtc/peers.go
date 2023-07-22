@@ -3,6 +3,7 @@ package webrtc
 import (
 	"sync"
 
+	"github.com/Avyukth/streaming.service/pkg/webrtc"
 	"github.com/gofiber/contrib/websocket"
 )
 
@@ -45,14 +46,28 @@ func (t *ThreadSafeWriter) WriteJSON(v interface{}) error {
 }
 
 func (p *Peers) AddTrack(t *webrtc.TrackRemote) *webrtc.TrackLocalStaticRTP {
-	return nil
-
+	p.ListLock.Lock()
+	defer func() {
+		p.ListLock.Unlock()
+		p.SinglePeerConnections()
+	}()
+	trackLocal, err := webrtc.NewTrackLOcalStaticRTP(t.Codec().RTPCodecCapability, t.ID(), t.StreamID())
+	if err != nil {
+		return nil
+	}
+	p.TrackLocals[t.ID()] = trackLocal
+	return trackLocal
 }
 func (p *Peers) RemoveTrack(t *webrtc.TrackRemote) {
-	return nil
+	p.ListLock.Lock()
+	defer func() {
+		p.ListLock.Unlock()
+		p.SinglePeerConnections()
+	}()
+	delete(p.TrackLocals, t.ID())
 }
 
-func (p *Peers) SinglePeerConnection() {
+func (p *Peers) SinglePeerConnections() {
 	return nil
 }
 func (p *Peers) DispatchKeyFrame() {
