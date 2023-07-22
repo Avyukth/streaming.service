@@ -1,9 +1,12 @@
 package handlers
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"os"
+	"time"
 
+	"github.com/Avyukth/streaming.service/pkg/chat"
 	w "github.com/Avyukth/streaming.service/pkg/webrtc"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
@@ -46,12 +49,31 @@ func Room(c *fiber.Ctx) error {
 }
 
 func CreateOrGetRoom(uuid string) (string, string, *w.Room) {
-	uuid := c.Params("uuid")
-	if uuid == "" {
-		uuid = guuid.New().String()
-		c.Redirect(fmt.Sprintf("/room/%s", uuid))
+	w.RoomsLock.Lock()
+	defer w.RoomsLock.Unlock()
+	h := sha256.New()
+	h.Write([]byte(uuid))
+
+	suuid := fmt.Sprintf("%x", h.Sum(nil))
+
+	if room := w.Rooms["uuid"]; room != nil {
+
+		if _, ok := w.Streams["suuid"]; ok {
+			w.Streams["suuid"] = room
+		}
+		return uuid, suuid, room
 	}
-	return uuid
+	hub := chat.NewHub()
+	p := &w.Peers{}
+	p.TrackLocals = make(map[string]*webrtc.TrackLocalStaticRTP)
+	room := &w.Room{
+		Peers: p,
+		Hub:   hub,
+	}
+	w.Rooms[uuid] = room
+	w.Streams[suuid] = room
+	go hub.Run()
+	return uuid, suuid, room
 }
 
 func RoomWebsocket(c *websocket.Conn) {
@@ -79,6 +101,22 @@ func RoomViewerWebsocket(c *websocket.Conn) {
 }
 
 func roomViewerConnection(c *websocket.Conn, p *w.Peers) {
+	ticker := time.NewTicker(1 * time.Second)
+	defer ticker.Stop()
+	defer c.Close()
+
+	for {
+		select {
+		case <-ticker.C:
+			w, err := c.Conn.NextWriter(websocket.TextMessage)
+			if err != nil {
+				return
+			}
+			w.Write([]byte(fmt.Sprintf("%d", len(p.Connection))))
+		}
+
+	}
+
 	uuid := c.Params("uuid")
 	if uuid == "" {
 		return
