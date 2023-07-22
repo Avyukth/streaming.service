@@ -2,6 +2,8 @@ package webrtc
 
 import (
 	"sync"
+
+	"github.com/gofiber/contrib/websocket"
 )
 
 type Room struct {
@@ -15,11 +17,18 @@ type Peers struct {
 }
 
 type PeerConnectionState struct {
-	PeerConnection   *webrtc.PeerConnection
-	websocket        websocket
-	Mutex            sync.RWMutex
-	Conn             connection
-	ThreadSafeWriter *ThreadSafeWriter
+	PeerConnection *webrtc.PeerConnection
+	websocket      *ThreadSafeWriter
+}
+
+type ThreadSafeWriter struct {
+	Conn  *websocket.Conn
+	Mutex sync.Mutex
+}
+
+type webSocketMessage struct {
+	Event string `json:"event"`
+	Data  string `json:"data"`
 }
 
 func NewPeerConnectionState() *PeerConnectionState {
@@ -27,4 +36,25 @@ func NewPeerConnectionState() *PeerConnectionState {
 		PeerConnection: nil,
 	}
 
+}
+
+func (t *ThreadSafeWriter) WriteJSON(v interface{}) error {
+	t.Mutex.Lock()
+	defer t.Mutex.Unlock()
+	return t.Conn.WriteJSON(v)
+}
+
+func (p *Peers) AddTrack(t *webrtc.TrackRemote) *webrtc.TrackLocalStaticRTP {
+	return nil
+
+}
+func (p *Peers) RemoveTrack(t *webrtc.TrackRemote) {
+	return nil
+}
+
+func (p *Peers) SinglePeerConnection() {
+	return nil
+}
+func (p *Peers) DispatchKeyFrame() {
+	return nil
 }
