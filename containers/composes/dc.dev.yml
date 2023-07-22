@@ -1,6 +1,7 @@
 version: "3.8"
 services:
   server:
+    name: streaming-server
     image: streaming.service
     deploy:
       replicas: 1
