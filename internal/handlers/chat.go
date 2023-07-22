@@ -38,9 +38,6 @@ func StreamChatWebSocket(c *websocket.Conn) {
 		return
 	}
 	w.RoomsLock.Lock()
-	if stream.Hub == nil {
-		return
-	}
 	if stream, ok := w.Streams[suuid]; ok {
 
 		w.RoomsLock.Unlock()
@@ -50,6 +47,7 @@ func StreamChatWebSocket(c *websocket.Conn) {
 			stream.Hub = hub
 			go hub.Run()
 		}
-
+		chat.PeerChatConn(c.Conn, stream.Hub)
+		return
 	}
 }
