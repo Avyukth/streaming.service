@@ -73,7 +73,7 @@ func (p *Peers) SinglePeerConnections() {
 		p.DispatchKeyFrame()
 	}()
 	attemptSync:= func() (tryAgain bool) {
-	for i:= range p.Connection
+	for i:= range p.Connection{
         if p.Connection[i].PeerConnection.ConnectionState()== webrtc.PeerConnectionStateConnected {
             return true
         }
