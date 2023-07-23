@@ -11,7 +11,14 @@ require (
 	github.com/gofiber/utils v1.1.0 // indirect
 	github.com/gorilla/schema v1.1.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
+	github.com/hhrutter/lzw v1.0.0 // indirect
+	github.com/hhrutter/tiff v1.0.0 // indirect
+	github.com/pdfcpu/pdfcpu v0.4.2 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/savsgio/gotils v0.0.0-20230208104028-c358bd845dee // indirect
+	golang.org/x/image v0.5.0 // indirect
+	golang.org/x/text v0.8.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
 require (

@@ -3,7 +3,6 @@ package webrtc
 import (
 	"sync"
 
-	"github.com/Avyukth/streaming.service/pkg/webrtc"
 	"github.com/gofiber/contrib/websocket"
 )
 
@@ -68,8 +67,18 @@ func (p *Peers) RemoveTrack(t *webrtc.TrackRemote) {
 }
 
 func (p *Peers) SinglePeerConnections() {
-	return nil
+	p.ListLock.Lock()
+	defer func() {
+		p.ListLock.Unlock()
+		p.DispatchKeyFrame()
+	}()
+	attemptSync:= func() (tryAgain bool) {
+	for i:= range p.Connection
+        if p.Connection[i].PeerConnection.ConnectionState()== webrtc.PeerConnectionStateConnected {
+            return true
+        }
+	}
 }
-func (p *Peers) DispatchKeyFrame() {
+	func (p *Peers) DispatchKeyFrame() {
 	return nil
 }
