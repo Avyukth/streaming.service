@@ -79,6 +79,6 @@ func (p *Peers) SinglePeerConnections() {
         }
 	}
 }
-	func (p *Peers) DispatchKeyFrame() {
+	func (p *Peers) DispatchKeyFrame() error {
 	return nil
 }
