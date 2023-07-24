@@ -1,16 +1,17 @@
-package webrtc
+package rtc
 
 import (
+	"encoding/json"
 	"log"
 	"os"
 	"sync"
 
-	"encoding/json"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/pion/webrtc/v3"
 )
 
-func StreamConn(c *websocket.Conn, p *Peers) {
+func RoomConnection(c *websocket.Conn, p *Peers) {
+
 	var config webrtc.Configuration
 	if os.Getenv("ENVIRONMENT") == "PRODUCTION" {
 		config = turnConfig
@@ -38,12 +39,14 @@ func StreamConn(c *websocket.Conn, p *Peers) {
 			Mutex: sync.Mutex{},
 		}}
 
+	// Add our new PeerConnection to global list
 	p.ListLock.Lock()
 	p.Connections = append(p.Connections, newPeer)
 	p.ListLock.Unlock()
 
 	log.Println(p.Connections)
 
+	// Trickle ICE. Emit server candidate to client
 	peerConnection.OnICECandidate(func(i *webrtc.ICECandidate) {
 		if i == nil {
 			return
@@ -63,6 +66,7 @@ func StreamConn(c *websocket.Conn, p *Peers) {
 		}
 	})
 
+	// If PeerConnection is closed remove it from global list
 	peerConnection.OnConnectionStateChange(func(pp webrtc.PeerConnectionState) {
 		switch pp {
 		case webrtc.PeerConnectionStateFailed:
@@ -71,6 +75,27 @@ func StreamConn(c *websocket.Conn, p *Peers) {
 			}
 		case webrtc.PeerConnectionStateClosed:
 			p.SignalPeerConnections()
+		}
+	})
+
+	peerConnection.OnTrack(func(t *webrtc.TrackRemote, _ *webrtc.RTPReceiver) {
+		// Create a track to fan out our incoming video to all peers
+		trackLocal := p.AddTrack(t)
+		if trackLocal == nil {
+			return
+		}
+		defer p.RemoveTrack(trackLocal)
+
+		buf := make([]byte, 1500)
+		for {
+			i, _, err := t.Read(buf)
+			if err != nil {
+				return
+			}
+
+			if _, err = trackLocal.Write(buf[:i]); err != nil {
+				return
+			}
 		}
 	})
 

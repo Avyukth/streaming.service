@@ -18,7 +18,7 @@ func RoomChatWebsocket(c *websocket.Conn) {
 		return
 
 	}
-	w.RoomsLock.LocK()
+	w.RoomsLock.Lock()
 	room := w.Rooms[uuid]
 	w.RoomsLock.Unlock()
 	if room == nil {
