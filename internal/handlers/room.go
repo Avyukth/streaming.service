@@ -3,13 +3,13 @@ package handlers
 import (
 	"crypto/sha256"
 	"fmt"
-	"os"
-	"time"
-
 	"github.com/Avyukth/streaming.service/pkg/chat"
 	w "github.com/Avyukth/streaming.service/pkg/rtc"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
+	"github.com/pion/webrtc/v3"
+	"os"
+	"time"
 
 	gguid "github.com/google/uuid"
 )
@@ -112,7 +112,7 @@ func roomViewerConnection(c *websocket.Conn, p *w.Peers) {
 			if err != nil {
 				return
 			}
-			w.Write([]byte(fmt.Sprintf("%d", len(p.Connection))))
+			w.Write([]byte(fmt.Sprintf("%d", len(p.Connections))))
 		}
 
 	}

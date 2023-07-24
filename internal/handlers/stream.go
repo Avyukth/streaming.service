@@ -2,12 +2,12 @@ package handlers
 
 import (
 	"fmt"
-	"os"
-	"time"
-
 	w "github.com/Avyukth/streaming.service/pkg/rtc"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
+	"github.com/pion/webrtc/v3"
+	"os"
+	"time"
 )
 
 func Stream(c *fiber.Ctx) error {
@@ -57,7 +57,7 @@ func StreamViewerWebSocket(c *websocket.Conn) {
 	w.RoomsLock.Lock()
 	if _, ok := w.Streams[suuid]; !ok {
 		w.RoomsLock.Unlock()
-		viewerConn(c, Streams.Viewers)
+		viewerConnection(c, Streams.Viewers)
 		return
 	}
 	w.RoomsLock.Unlock()
