@@ -25,9 +25,9 @@ func Stream(c *fiber.Ctx) error {
 	if _, ok := w.Rooms[suuid]; !ok {
 		w.RoomsLock.Unlock()
 		return c.Render("stream", fiber.Map{
-			"StreamWebsocketAddr": fmt.Sprintf("%s://%s/stream/%/websocket", ws, c.Hostname(), suuid),
-			"ChatWebsocketAddr":   fmt.Sprintf("%s://%s/stream/%/chat/websocket", ws, c.Hostname(), suuid),
-			"ViewerWebsocketAddr": fmt.Sprintf("%s://%s/stream/%/viewer/websocket", ws, c.Hostname(), suuid),
+			"StreamWebsocketAddr": fmt.Sprintf("%s://%s/stream/%s/websocket", ws, c.Hostname(), suuid),
+			"ChatWebsocketAddr":   fmt.Sprintf("%s://%s/stream/%s/chat/websocket", ws, c.Hostname(), suuid),
+			"ViewerWebsocketAddr": fmt.Sprintf("%s://%s/stream/%s/viewer/websocket", ws, c.Hostname(), suuid),
 			"Type":                "stream",
 		}, "layouts/main")
 	}
