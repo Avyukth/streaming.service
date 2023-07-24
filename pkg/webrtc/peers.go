@@ -3,7 +3,14 @@ package webrtc
 import (
 	"sync"
 
+	"github.com/Avyukth/streaming.service/pkg/chat"
 	"github.com/gofiber/contrib/websocket"
+)
+
+var (
+	RoomsLock sync.RWMutex
+	Rooms     map[string]*Room
+	Streams   map[string]*Room
 )
 
 type Room struct {
@@ -12,7 +19,7 @@ type Room struct {
 }
 type Peers struct {
 	ListLock    sync.RWMutex
-	Connection  []PeerConnectionState
+	Connections []PeerConnectionState
 	TrackLocals map[string]*webrtc.TrackLocalStaticRTP
 }
 
@@ -67,18 +74,35 @@ func (p *Peers) RemoveTrack(t *webrtc.TrackRemote) {
 }
 
 func (p *Peers) SinglePeerConnections() {
-	p.ListLock.Lock()
-	defer func() {
-		p.ListLock.Unlock()
-		p.DispatchKeyFrame()
-	}()
-	attemptSync:= func() (tryAgain bool) {
-	for i:= range p.Connection{
-        if p.Connection[i].PeerConnection.ConnectionState()== webrtc.PeerConnectionStateConnected {
-            return true
-        }
-	}
+	// p.ListLock.Lock()
+	// defer func() {
+	// 	p.ListLock.Unlock()
+	// 	p.DispatchKeyFrame()
+	// }()
+	// attemptSync:= func() (tryAgain bool) {
+	// for i:= range p.Connection{
+
+	//     if p.Connection[i].PeerConnection.ConnectionState()== webrtc.PeerConnectionStateConnected {
+	//         return true
+	//     }
+
+	// }
 }
-	func (p *Peers) DispatchKeyFrame() error {
-	return nil
+func (p *Peers) DispatchKeyFrame() {
+	p.ListLock.Lock()
+	defer p.ListLock.Unlock()
+
+	for i := range p.Connections {
+		for _, receiver := range p.Connections[i].PeerConnection.GetReceivers() {
+			if receiver.Track() == nil {
+				continue
+			}
+
+			_ = p.Connections[i].PeerConnection.WriteRTCP([]rtcp.Packet{
+				&rtcp.PictureLossIndication{
+					MediaSSRC: uint32(receiver.Track().SSRC()),
+				},
+			})
+		}
+	}
 }
