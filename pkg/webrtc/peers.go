@@ -93,7 +93,7 @@ func (p *Peers) AddTrack(t *webrtc.TrackRemote) *webrtc.TrackLocalStaticRTP {
 	return trackLocal
 }
 
-func (p *Peers) RemoveTrack(t *webrtc.TrackRemote) {
+func (p *Peers) RemoveTrack(t *webrtc.TrackLocalStaticRTP) {
 	p.ListLock.Lock()
 	defer func() {
 		p.ListLock.Unlock()

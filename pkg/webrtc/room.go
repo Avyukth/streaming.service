@@ -10,7 +10,7 @@ import (
 	"github.com/pion/webrtc/v3"
 )
 
-func RoomConnection(c *websocket.Conn, p *Peers) (conn *webrtc.PeerConnection, err error) {
+func RoomConnection(c *websocket.Conn, p *Peers) {
 
 	var config webrtc.Configuration
 	if os.Getenv("ENVIRONMENT") == "PRODUCTION" {
@@ -58,7 +58,7 @@ func RoomConnection(c *websocket.Conn, p *Peers) (conn *webrtc.PeerConnection, e
 			return
 		}
 
-		if writeErr := newPeer.Websocket.WriteJSON(&websocketMessage{
+		if writeErr := newPeer.Websocket.WriteJSON(&webSocketMessage{
 			Event: "candidate",
 			Data:  string(candidateString),
 		}); writeErr != nil {
@@ -100,7 +100,7 @@ func RoomConnection(c *websocket.Conn, p *Peers) (conn *webrtc.PeerConnection, e
 	})
 
 	p.SignalPeerConnections()
-	message := &websocketMessage{}
+	message := &webSocketMessage{}
 	for {
 		_, raw, err := c.ReadMessage()
 		if err != nil {
