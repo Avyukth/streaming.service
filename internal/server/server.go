@@ -38,10 +38,10 @@ func Run() error {
 	app.Get("/room/:uuid/chat", handlers.RoomChat)
 	app.Get("/room/:uuid/chat/websocket", websocket.New(handlers.RoomChatWebsocket))
 	app.Get("/room/:uuid/viewer/websocket", websocket.New(handlers.RoomViewerWebsocket))
-	app.Get("/stream/:ssuid/websocket", websocket.New(handlers.StreamWebsocket, websocket.Config{
+	app.Get("/stream/:ssuid/websocket", websocket.New(handlers.StreamWebSocket, websocket.Config{
 		HandshakeTimeout: time.Second * 10}))
-	app.Get("/stream/:ssuid/chat/websocket", websocket.New(handlers.StreamChatWebsocket))
-	app.Get("/stream/:ssuid/viewer/websocket", websocket.New(handlers.StreamViewerWebsocket))
+	app.Get("/stream/:ssuid/chat/websocket", websocket.New(handlers.StreamChatWebSocket))
+	app.Get("/stream/:ssuid/viewer/websocket", websocket.New(handlers.StreamViewerWebSocket))
 	app.Static("/", "./assets")
 
 	w.Rooms = make(map[string]*w.Room)
@@ -57,7 +57,7 @@ func Run() error {
 func dispatchKeyFrames() {
 	for range time.NewTicker(time.Second * 1).C {
 		for _, room := range w.Rooms {
-			room.DispatchKeyFrame()
+			room.Peers.DispatchKeyFrame()
 		}
 	}
 }
