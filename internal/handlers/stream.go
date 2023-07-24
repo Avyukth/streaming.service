@@ -5,8 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/Avyukth/streaming.service/pkg/webrtc"
-	w "github.com/Avyukth/streaming.service/pkg/webrtc"
+	w "github.com/Avyukth/streaming.service/pkg/rtc"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 )
