@@ -42,9 +42,9 @@ func StreamWebSocket(c *websocket.Conn) {
 		return
 	}
 	w.RoomsLock.Lock()
-	if _, ok := w.Streams[suuid]; !ok {
+	if stream, ok := w.Streams[suuid]; !ok {
 		w.RoomsLock.Unlock()
-		w.StreamConn(c, Streams.Peers)
+		w.StreamConn(c, stream.Peers)
 		return
 	}
 	w.RoomsLock.Unlock()
@@ -56,9 +56,9 @@ func StreamViewerWebSocket(c *websocket.Conn) {
 		return
 	}
 	w.RoomsLock.Lock()
-	if _, ok := w.Streams[suuid]; !ok {
+	if stream, ok := w.Streams[suuid]; !ok {
 		w.RoomsLock.Unlock()
-		viewerConnection(c, Streams.Viewers)
+		viewerConnection(c, stream.Peers)
 		return
 	}
 	w.RoomsLock.Unlock()
