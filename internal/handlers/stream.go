@@ -5,7 +5,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/Avyukth/streaming.service/pkg/rtc"
 	w "github.com/Avyukth/streaming.service/pkg/rtc"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
@@ -64,7 +63,7 @@ func StreamViewerWebSocket(c *websocket.Conn) {
 	w.RoomsLock.Unlock()
 }
 
-func viewerConnection(c *websocket.Conn, p *rtc.Peers) {
+func viewerConnection(c *websocket.Conn, p *w.Peers) {
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 	defer c.Close()
